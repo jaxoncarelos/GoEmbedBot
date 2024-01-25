@@ -14,7 +14,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, World!")
 	// get token from .env
 	godotenv.Load()
 	Token := os.Getenv("TOKEN")
