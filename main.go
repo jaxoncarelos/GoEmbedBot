@@ -108,9 +108,6 @@ func download_video_file(url string, should_be_spoiled bool) (string, string) {
 	return output, outPath
 }
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	fmt.Println("Message Created")
-	fmt.Printf("Author: %s\n", m.Author.Username)
-	fmt.Printf("Message: %s\n", m.Content)
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
@@ -124,38 +121,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if is_valid == "" {
 		return
 	}
+	fmt.Println("Message Created")
+	fmt.Printf("Author: %s\n", m.Author.Username)
+	fmt.Printf("Message: %s\n", m.Content)
 	// delete everything in the string thats not a match
 	checkRegex := regexp.MustCompile(regex[is_valid])
 	content = checkRegex.FindString(content)
 	if is_valid != "" {
-		// cmd := exec.Command("yt-dlp", "-g", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", content)
-
-		// var out bytes.Buffer
-		// var stderr bytes.Buffer
-		// cmd.Stdout = &out
-		// cmd.Stderr = &stderr
-		// err := cmd.Run()
-
-		// if err != nil {
-		// 	log.Printf("%s\n", stderr.String())
-
-		// }
-		// output := out.String()
-
-		// fmt.Println(output)
-		// if err != nil {
-		// 	log.Printf("Error downloading: %s\n", err)
-		// 	return
-		// }
-		// output = out.String()
-		// if !strings.HasPrefix(output, "https://video.twimg.com") {
-		// 	break
-		// }
-		// // reply without mentioning
-		// s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
-		// 	Reference:       m.Reference(),
-		// 	AllowedMentions: &discordgo.MessageAllowedMentions{},
-		// 	Content:         output,
 		// })
 		output, outPath := download_video_file(content, should_be_spoiled)
 
