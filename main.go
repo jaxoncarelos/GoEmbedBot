@@ -117,7 +117,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// delete everything in the string thats not a match
 	checkRegex := regexp.MustCompile(regex[is_valid])
 	content = checkRegex.FindString(content)
-	if is_valid != "" {
+	switch is_valid {
+	case "twitter":
+		cmd := exec.Command("yt-dlp", "-g", "-f", "http-2176", content)
+		output, err := cmd.Output()
+		if err != nil {
+			log.Printf("Error getting twitter video: %s\n", err)
+			return
+		}
+		s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
+			Reference:       m.Reference(),
+			AllowedMentions: &discordgo.MessageAllowedMentions{},
+			Content:         fmt.Sprintf("[Twitter Video](%s)", output),
+		})
+	default:
 		// })
 		output, outPath := download_video_file(content, should_be_spoiled)
 
