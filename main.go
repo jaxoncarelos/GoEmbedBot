@@ -118,6 +118,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkRegex := regexp.MustCompile(regex[is_valid])
 	content = checkRegex.FindString(content)
 	switch is_valid {
+	case "instagram":
+		cmd := exec.Command("yt-dlp", "-g", content)
+		output, err := cmd.Output()
+		if err != nil {
+			log.Printf("Error getting instagram video: %s\n", err)
+			return
+		}
+		s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
+			Reference:       m.Reference(),
+			AllowedMentions: &discordgo.MessageAllowedMentions{},
+			Content:         fmt.Sprintf("[Instagram Video](%s)", output),
+		})
 	case "twitter":
 		cmd := exec.Command("yt-dlp", "-g", "-f", "http-2176", content)
 		output, err := cmd.Output()
