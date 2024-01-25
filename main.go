@@ -84,7 +84,7 @@ func download_video_file(url string, should_be_spoiled bool) (string, string) {
 	//                     "--no-playlist",
 	//                     "--no-warnings", '-o', outPath, content,
 	//                     ]
-	cmd := exec.Command("yt-dlp", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", "-S", "vcodec:h264", "--merge-output-format", "mp4", "--ignore-config", "--verbose", "--no-playlist", "--no-warnings", "-o", "1"+outPath, url)
+	cmd := exec.Command("yt-dlp", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", "-S", "vcodec:h264", "--merge-output-format", "mp4", "--ignore-config", "--verbose", "--no-playlist", "--no-warnings", "-o", outPath, url)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
@@ -94,15 +94,6 @@ func download_video_file(url string, should_be_spoiled bool) (string, string) {
 		log.Printf("%s\n", stderr.String())
 		return "", ""
 	}
-	cmd = exec.Command("ffmpeg", "-i", "1"+outPath, "-y", "-c:v", "libx264", "-crf", "23", "-preset", "ultrafast", "-c:a", "copy", outPath)
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	err = cmd.Run()
-	if err != nil {
-		log.Printf("%s\n", stderr.String())
-		return "", ""
-	}
-	os.Remove("1" + outPath)
 	output := out.String()
 	return output, outPath
 }
