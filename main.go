@@ -37,11 +37,18 @@ func main() {
 	dg.Close()
 }
 
-var regex map[string]string = map[string]string{
-	"twitter":   `https:\/\/(?:www\.)?(twitter|x)\.com\/.+\/status(?:es)?\/(\d+)(?:.+ )?`,
-	"tiktok":    `https?://(?:www\.|vm\.|vt\.)?tiktok\.com/.+(?: )?`,
-	"reddit":    `https?://(?:(?:old\.|www\.)?reddit\.com|v\.redd\.it)/.+(?: )?`,
-	"instagram": `https?:\/\/(?:www\.)?instagram\.com\/[a-zA-Z0-9_]+\/?(?:\?igshid=[a-zA-Z0-9_]+)?`,
+const (
+	Twitter   = 0
+	Tiktok    = 1
+	Reddit    = 2
+	Instagram = 3
+)
+
+var regex map[int]string = map[int]string{
+	Twitter:   `https:\/\/(?:www\.)?(twitter|x)\.com\/.+\/status(?:es)?\/(\d+)(?:.+ )?`,
+	Tiktok:    `https?://(?:www\.|vm\.|vt\.)?tiktok\.com/.+(?: )?`,
+	Reddit:    `https?://(?:(?:old\.|www\.)?reddit\.com|v\.redd\.it)/.+(?: )?`,
+	Instagram: `https?:\/\/(?:www\.)?instagram\.com\/[a-zA-Z0-9_]+\/?(?:\?igshid=[a-zA-Z0-9_]+)?`,
 }
 
 func ShouldBeSpoilered(content string) bool {
@@ -51,14 +58,14 @@ func ShouldBeSpoilered(content string) bool {
 	}
 	return false
 }
-func IsValidUrl(url string) string {
+func IsValidUrl(url string) int {
 	for i, v := range regex {
 		pattern := regexp.MustCompile(v)
 		if match := pattern.MatchString(url); match {
 			return i
 		}
 	}
-	return ""
+	return -1
 }
 func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
@@ -96,7 +103,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	should_be_spoiled := ShouldBeSpoilered(content)
 	isValid := IsValidUrl(content)
-	if isValid == "" {
+	if isValid < 0 {
 		return
 	}
 	fmt.Println("Message Created")
@@ -106,7 +113,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkRegex := regexp.MustCompile(regex[isValid])
 	content = checkRegex.FindString(content)
 	switch isValid {
-	case "twitter":
+	case Twitter:
 		cmd := exec.Command("yt-dlp", "-g", "-f", "http-2176", content)
 		output, err := cmd.Output()
 		if err != nil {
@@ -122,7 +129,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		output, outPath, err := DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {
 			log.Printf("Error downloading video: %s\n", err)
-			if isValid == "tiktok" {
+			if isValid == Tiktok {
 				s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 			}
 			return
