@@ -44,14 +44,14 @@ var regex map[string]string = map[string]string{
 	"instagram": `https?:\/\/(?:www\.)?instagram\.com\/[a-zA-Z0-9_]+\/?(?:\?igshid=[a-zA-Z0-9_]+)?`,
 }
 
-func should_be_spoilered(content string) bool {
+func ShouldBeSpoilered(content string) bool {
 	pattern := `^([|]{2}).*$1$`
 	if match, _ := regexp.MatchString(pattern, content); match {
 		return true
 	}
 	return false
 }
-func is_valid_url(url string) string {
+func IsValidUrl(url string) string {
 	for i, v := range regex {
 		pattern := regexp.MustCompile(v)
 		if match := pattern.MatchString(url); match {
@@ -64,7 +64,7 @@ func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
-func download_video_file(url string, should_be_spoiled bool) (string, string, error) {
+func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
 	outPath := "output.mp4"
 	if should_be_spoiled {
 		outPath = "SPOILER_output.mp4"
@@ -94,18 +94,18 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		log.Printf("Did no embed on %s\n", content)
 		return
 	}
-	should_be_spoiled := should_be_spoilered(content)
-	is_valid := is_valid_url(content)
-	if is_valid == "" {
+	should_be_spoiled := ShouldBeSpoilered(content)
+	isValid := IsValidUrl(content)
+	if isValid == "" {
 		return
 	}
 	fmt.Println("Message Created")
 	fmt.Printf("Author: %s\n", m.Author.Username)
 	fmt.Printf("Message: %s\n", m.Content)
 	// delete everything in the string thats not a match
-	checkRegex := regexp.MustCompile(regex[is_valid])
+	checkRegex := regexp.MustCompile(regex[isValid])
 	content = checkRegex.FindString(content)
-	switch is_valid {
+	switch isValid {
 	case "twitter":
 		cmd := exec.Command("yt-dlp", "-g", "-f", "http-2176", content)
 		output, err := cmd.Output()
@@ -119,10 +119,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Content:         fmt.Sprintf("[Twitter Video](%s)", output),
 		})
 	default:
-		output, outPath, err := download_video_file(content, should_be_spoiled)
+		output, outPath, err := DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {
 			log.Printf("Error downloading video: %s\n", err)
-			s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
 			return
 		}
 		if output == "" {
