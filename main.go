@@ -44,8 +44,6 @@ var regex map[string]string = map[string]string{
 	"instagram": `https?:\/\/(?:www\.)?instagram\.com\/[a-zA-Z0-9_]+\/?(?:\?igshid=[a-zA-Z0-9_]+)?`,
 }
 
-var urlRegex string = `(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?`
-
 func should_be_spoilered(content string) bool {
 	pattern := `^([|]{2}).*$1$`
 	if match, _ := regexp.MatchString(pattern, content); match {
@@ -66,7 +64,7 @@ func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
-func download_video_file(url string, should_be_spoiled bool) (string, string) {
+func download_video_file(url string, should_be_spoiled bool) (string, string, error) {
 	outPath := "output.mp4"
 	if should_be_spoiled {
 		outPath = "SPOILER_output.mp4"
@@ -74,16 +72,6 @@ func download_video_file(url string, should_be_spoiled bool) (string, string) {
 	if fileExists(outPath) {
 		os.Remove(outPath)
 	}
-	// ["yt-dlp",
-	//                     "-f", "bestvideo[filesize<6MB]+bestaudio[filesize<2MB]/best/bestvideo+bestaudio",
-	//                     "-S", "vcodec:h264",
-	//                     "--merge-output-format", "mp4",
-	//                     "--ignore-config",
-	//                     "--verbose",
-	//                     "--cookies", "cookies.txt" if "instagram" in content else ""
-	//                     "--no-playlist",
-	//                     "--no-warnings", '-o', outPath, content,
-	//                     ]
 	cmd := exec.Command("yt-dlp", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", "-S", "vcodec:h264", "--merge-output-format", "mp4", "--ignore-config", "--verbose", "--no-playlist", "--no-warnings", "-o", outPath, url)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
@@ -92,10 +80,10 @@ func download_video_file(url string, should_be_spoiled bool) (string, string) {
 	err := cmd.Run()
 	if err != nil {
 		log.Printf("%s\n", stderr.String())
-		return "", ""
+		return "", "", err
 	}
 	output := out.String()
-	return output, outPath
+	return output, outPath, nil
 }
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
@@ -118,18 +106,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkRegex := regexp.MustCompile(regex[is_valid])
 	content = checkRegex.FindString(content)
 	switch is_valid {
-	case "instagram":
-		cmd := exec.Command("yt-dlp", "-g", content)
-		output, err := cmd.Output()
-		if err != nil {
-			log.Printf("Error getting instagram video: %s\n", err)
-			return
-		}
-		s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
-			Reference:       m.Reference(),
-			AllowedMentions: &discordgo.MessageAllowedMentions{},
-			Content:         fmt.Sprintf("[Instagram Video](%s)", output),
-		})
 	case "twitter":
 		cmd := exec.Command("yt-dlp", "-g", "-f", "http-2176", content)
 		output, err := cmd.Output()
@@ -143,9 +119,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Content:         fmt.Sprintf("[Twitter Video](%s)", output),
 		})
 	default:
-		// })
-		output, outPath := download_video_file(content, should_be_spoiled)
-
+		output, outPath, err := download_video_file(content, should_be_spoiled)
+		if err != nil {
+			log.Printf("Error downloading video: %s\n", err)
+			s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
+			return
+		}
 		if output == "" {
 			return
 		}
@@ -158,8 +137,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Reference:       m.Reference(),
 			AllowedMentions: &discordgo.MessageAllowedMentions{},
 			File: &discordgo.File{
-				Name: outPath,
-				// mp4 file reader
+				Name:        outPath,
 				Reader:      strings.NewReader(string(bytes)),
 				ContentType: "video/mp4",
 			},
