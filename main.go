@@ -122,6 +122,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		output, outPath, err := DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {
 			log.Printf("Error downloading video: %s\n", err)
+			if isValid == "tiktok" {
+				s.MessageReactionAdd(m.ChannelID, m.ID, "❌")
+			}
 			return
 		}
 		if output == "" {
