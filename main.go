@@ -114,7 +114,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	content = checkRegex.FindString(content)
 	switch isValid {
 	case Twitter:
-		cmd := exec.Command("yt-dlp", "-g", "-f", "http-2176", content)
+		cmd := exec.Command("yt-dlp", "-g", "-f", "best[ext=mp4]", content)
 		output, err := cmd.Output()
 		if err != nil {
 			log.Printf("Error getting twitter video: %s\n", err)
