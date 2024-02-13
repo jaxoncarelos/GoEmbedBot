@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-  "jaxon/embedbot/handler"
+
+	"jaxon/embedbot/handler"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
@@ -31,4 +32,3 @@ func main() {
 
 	dg.Close()
 }
-
