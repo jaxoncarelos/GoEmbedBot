@@ -23,8 +23,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	should_be_spoiled := ContentUtils.ShouldBeSpoilered(content)
-	isValid := ContentUtils.IsValidUrl(content)
-	if isValid < 0 {
+	isValid, err := ContentUtils.IsValidUrl(content)
+	if err != nil {
 		return
 	}
 	fmt.Println("Message Created")

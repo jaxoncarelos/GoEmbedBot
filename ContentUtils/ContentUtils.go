@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+  "errors"
 )
 
 const (
@@ -33,16 +34,16 @@ func ShouldBeSpoilered(content string) bool {
 	}
 	return false
 }
-
-func IsValidUrl(url string) int {
+func IsValidUrl(url string) (int, error) {
 	for i, v := range regex {
 		pattern := regexp.MustCompile(v)
 		if match := pattern.MatchString(url); match {
-			return i
+			return i, nil
 		}
 	}
-	return -1
+	return -1, errors.New("Invalid URL")
 }
+
 
 func FileExists(filename string) bool {
 	_, err := os.Stat(filename)
