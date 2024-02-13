@@ -45,9 +45,9 @@ func IsValidUrl(url string) (int, error) {
 }
 
 
-func FileExists(filename string) bool {
+func FileExists(filename string) error {
 	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
+	return err 
 }
 
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
@@ -55,10 +55,13 @@ func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, erro
 	if should_be_spoiled {
 		outPath = "SPOILER_output.mp4"
 	}
-	if FileExists(outPath) {
-		os.Remove(outPath)
-	}
-	cmd := exec.Command("yt-dlp", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", "-S", "vcodec:h264", "--merge-output-format", "mp4", "--ignore-config", "--verbose", "--no-playlist", "--no-warnings", "-o", outPath, url)
+  {
+    err := FileExists(outPath)
+    if err == nil {
+      os.Remove(outPath)
+    }
+  }
+  cmd := exec.Command("yt-dlp", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", "-S", "vcodec:h264", "--merge-output-format", "mp4", "--ignore-config", "--verbose", "--no-playlist", "--no-warnings", "-o", outPath, url)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out

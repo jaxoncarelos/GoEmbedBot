@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
 
 	"jaxon/embedbot/handler"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
@@ -28,7 +30,8 @@ func main() {
 
 	fmt.Println("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
-	<-sc
+	signal.Notify(sc, os.Interrupt)
+  <-sc
 
 	dg.Close()
 }
