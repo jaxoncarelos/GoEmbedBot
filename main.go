@@ -31,7 +31,7 @@ func main() {
 	fmt.Println("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, os.Interrupt)
-  <-sc
+	<-sc
 
 	dg.Close()
 }
