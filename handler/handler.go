@@ -12,7 +12,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -40,10 +39,14 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Printf("Error getting twitter video: %s\n", err)
 			return
 		}
+		toSend := fmt.Sprintf("[Twitter Video](%s)", output)
+		if should_be_spoiled {
+			toSend = fmt.Sprintf("||%s||", toSend)
+		}
 		s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
 			Reference:       m.Reference(),
 			AllowedMentions: &discordgo.MessageAllowedMentions{},
-			Content:         fmt.Sprintf("[Twitter Video](%s)", output),
+			Content:         toSend,
 		})
 	default:
 		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled)
