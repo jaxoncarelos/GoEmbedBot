@@ -2,11 +2,11 @@ package ContentUtils
 
 import (
 	"bytes"
+	"errors"
 	"log"
 	"os"
 	"os/exec"
 	"regexp"
-  "errors"
 )
 
 const (
@@ -28,12 +28,13 @@ func GetRegex(index int) string {
 }
 
 func ShouldBeSpoilered(content string) bool {
-	pattern := `^([|]{2}).*$1$`
+	pattern := `^([|]{2}).*$`
 	if match, _ := regexp.MatchString(pattern, content); match {
 		return true
 	}
 	return false
 }
+
 func IsValidUrl(url string) (int, error) {
 	for i, v := range regex {
 		pattern := regexp.MustCompile(v)
@@ -44,10 +45,9 @@ func IsValidUrl(url string) (int, error) {
 	return -1, errors.New("Invalid URL")
 }
 
-
 func FileExists(filename string) error {
 	_, err := os.Stat(filename)
-	return err 
+	return err
 }
 
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
@@ -55,13 +55,28 @@ func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, erro
 	if should_be_spoiled {
 		outPath = "SPOILER_output.mp4"
 	}
-  {
-    err := FileExists(outPath)
-    if err == nil {
-      os.Remove(outPath)
-    }
-  }
-  cmd := exec.Command("yt-dlp", "-f", "bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio", "-S", "vcodec:h264", "--merge-output-format", "mp4", "--ignore-config", "--verbose", "--no-playlist", "--no-warnings", "-o", outPath, url)
+	{
+		err := FileExists(outPath)
+		if err == nil {
+			os.Remove(outPath)
+		}
+	}
+	cmd := exec.Command(
+		"yt-dlp",
+		"-f",
+		"bestvideo[filesize<30MB]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio",
+		"-S",
+		"vcodec:h264",
+		"--merge-output-format",
+		"mp4",
+		"--ignore-config",
+		"--verbose",
+		"--no-playlist",
+		"--no-warnings",
+		"-o",
+		outPath,
+		url,
+	)
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
