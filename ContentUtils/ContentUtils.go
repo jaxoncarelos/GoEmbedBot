@@ -28,7 +28,7 @@ func GetRegex(index int) string {
 }
 
 func ShouldBeSpoilered(content string) bool {
-	pattern := `^([|]{2}).*$`
+	pattern := `^([|]{2}).*([|]{2})$`
 	if match, _ := regexp.MatchString(pattern, content); match {
 		return true
 	}
