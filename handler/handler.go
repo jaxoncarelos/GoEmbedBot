@@ -49,7 +49,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Content:         toSend,
 		})
 	default:
-		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled)
+		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled, string(m.Author.ID))
 		if err != nil {
 			log.Printf("Error downloading video: %s\n", err)
 			if isValid == ContentUtils.Tiktok {
