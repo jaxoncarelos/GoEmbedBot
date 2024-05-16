@@ -3,7 +3,6 @@ package ContentUtils
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -51,8 +50,8 @@ func FileExists(filename string) error {
 	return err
 }
 
-func DownloadVideoFile(url string, should_be_spoiled bool, sender string) (string, string, error) {
-	outPath := fmt.Sprintf("output%s.mp4", sender)
+func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
+	outPath := "output.mp4"
 	if should_be_spoiled {
 		outPath = "SPOILER_output.mp4"
 	}
