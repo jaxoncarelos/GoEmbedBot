@@ -33,7 +33,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	content = checkRegex.FindString(content)
 	switch isValid {
 	case ContentUtils.Twitter:
-		cmd := exec.Command("yt-dlp", "-g", "-f", "best[ext=mp4]", strings.Replace(content, "https://x.com", "https://twitter.com", 1))
+
 		output, err := cmd.Output()
 		if err != nil {
 			log.Printf("Error getting twitter video: %s\n", err)
@@ -49,7 +49,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Content:         toSend,
 		})
 	default:
-		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled, string(m.Author.ID))
+		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {
 			log.Printf("Error downloading video: %s\n", err)
 			if isValid == ContentUtils.Tiktok {
