@@ -45,9 +45,9 @@ func IsValidUrl(url string) (int, error) {
 	return -1, errors.New("Invalid URL")
 }
 
-func FileExists(filename string) error {
+func FileExists(filename string) bool {
 	_, err := os.Stat(filename)
-	return err
+	return err == nil
 }
 
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
@@ -56,8 +56,8 @@ func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, erro
 		outPath = "SPOILER_output.mp4"
 	}
 	{
-		err := FileExists(outPath)
-		if err == nil {
+		fileExists := FileExists(outPath)
+		if fileExists {
 			os.Remove(outPath)
 		}
 	}
