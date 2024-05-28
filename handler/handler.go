@@ -54,6 +54,29 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			AllowedMentions: &discordgo.MessageAllowedMentions{},
 			Content:         toSend,
 		})
+	case ContentUtils.Tiktok:
+		output, outPath, err := ContentUtils.DownloadTikTokVideo(content, should_be_spoiled)
+		if err != nil {
+			log.Printf("Error downloading tiktok video: %s\n", err)
+			return
+		}
+		bytes, err := os.ReadFile(outPath)
+		if err != nil {
+			log.Printf("Error opening file: %s\n", err)
+			return
+		}
+		if output == "" {
+			return
+		}
+		s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
+			Reference:       m.Reference(),
+			AllowedMentions: &discordgo.MessageAllowedMentions{},
+			File: &discordgo.File{
+				Name:        outPath,
+				Reader:      strings.NewReader(string(bytes)),
+				ContentType: "video/mp4",
+			},
+		})
 	default:
 		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {

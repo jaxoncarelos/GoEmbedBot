@@ -45,9 +45,39 @@ func IsValidUrl(url string) (int, error) {
 	return -1, errors.New("Invalid URL")
 }
 
-func FileExists(filename string) bool {
+func FileExists(filename string) error {
 	_, err := os.Stat(filename)
-	return err == nil
+	return err
+}
+
+func DownloadTikTokVideo(url string, should_be_spoiled bool) (string, string, error) {
+	outPath := "output.mp4"
+	if should_be_spoiled {
+		outPath = "SPOILER_output.mp4"
+	}
+	{
+		err := FileExists(outPath)
+		if err == nil {
+			os.Remove(outPath)
+		}
+	}
+	cmd := exec.Command(
+		"yt-dlp",
+		"-S",
+		"vcodec:h264,res:576",
+		url,
+	)
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Printf("%s\n", stderr.String())
+		return "", "", err
+	}
+	output := out.String()
+	return output, outPath, nil
 }
 
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
@@ -56,8 +86,8 @@ func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, erro
 		outPath = "SPOILER_output.mp4"
 	}
 	{
-		fileExists := FileExists(outPath)
-		if fileExists {
+		err := FileExists(outPath)
+		if err == nil {
 			os.Remove(outPath)
 		}
 	}
