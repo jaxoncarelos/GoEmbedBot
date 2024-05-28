@@ -50,50 +50,6 @@ func FileExists(filename string) error {
 	return err
 }
 
-func DownloadTikTokVideo(url string, should_be_spoiled bool) (string, string, error) {
-	log.Printf("Downloading tiktoktoktok%s\n", url)
-	outPath := "output.mp4"
-	if should_be_spoiled {
-		outPath = "SPOILER_output.mp4"
-	}
-	{
-		err := FileExists(outPath)
-		if err == nil {
-			os.Remove(outPath)
-		}
-
-	}
-	// yt-dlp -S vcodec:h265 --use-postprocessor FFmpegCopyStream --ppa CopyStream:"-c:v libx264 -c:a aac -f mp4"
-	cmd := exec.Command(
-		"yt-dlp",
-		"-S",
-		"vcodec:h265",
-		"--use-postprocessor",
-		"FFmpegCopyStream",
-		"--ppa",
-		"CopyStream:\"-c:v libx264 -c:a aac -f mp4\"",
-		"--ignore-config",
-		"--verbose",
-		"--no-playlist",
-		"--no-warnings",
-		"-o",
-		outPath,
-		url,
-	)
-
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	if err != nil {
-		log.Printf("%s\n", stderr.String())
-		return "", "", err
-	}
-	output := out.String()
-	return output, outPath, nil
-}
-
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
 	outPath := "output.mp4"
 	if should_be_spoiled {
