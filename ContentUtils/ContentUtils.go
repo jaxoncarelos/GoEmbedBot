@@ -61,11 +61,17 @@ func DownloadTikTokVideo(url string, should_be_spoiled bool) (string, string, er
 		if err == nil {
 			os.Remove(outPath)
 		}
+
 	}
+	// yt-dlp -S vcodec:h265 --use-postprocessor FFmpegCopyStream --ppa CopyStream:"-c:v libx264 -c:a aac -f mp4"
 	cmd := exec.Command(
 		"yt-dlp",
-		"-f",
-		"best",
+		"-S",
+		"vcodec:h265",
+		"--use-postprocessor",
+		"FFmpegCopyStream",
+		"--ppa",
+		"CopyStream:\"-c:v libx264 -c:a aac -f mp4\"",
 		"-o",
 		outPath,
 		url,
