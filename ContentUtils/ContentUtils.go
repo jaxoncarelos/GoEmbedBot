@@ -65,6 +65,8 @@ func DownloadTikTokVideo(url string, should_be_spoiled bool) (string, string, er
 		"yt-dlp",
 		"-S",
 		"vcodec:h264,res:576",
+		"-o",
+		outPath,
 		url,
 	)
 	var out bytes.Buffer
