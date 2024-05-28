@@ -63,8 +63,8 @@ func DownloadTikTokVideo(url string, should_be_spoiled bool) (string, string, er
 	}
 	cmd := exec.Command(
 		"yt-dlp",
-		"-f",
-		"bestvideo[res>100]+bestaudio[filesize<10mb]/best/bestvideo+bestaudio",
+		"-S",
+		"tbr:1887k",
 		"--verbose",
 		"-o",
 		outPath,
