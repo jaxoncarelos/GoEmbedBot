@@ -51,6 +51,7 @@ func FileExists(filename string) error {
 }
 
 func DownloadTikTokVideo(url string, should_be_spoiled bool) (string, string, error) {
+	log.Printf("Downloading tiktoktoktok%s\n", url)
 	outPath := "output.mp4"
 	if should_be_spoiled {
 		outPath = "SPOILER_output.mp4"
