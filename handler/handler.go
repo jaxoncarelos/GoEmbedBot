@@ -19,7 +19,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if sedHistory == nil {
 		sedHistory = make([]string, 10)
 	}
-	sedHistory = append(sedHistory, m.Message.Content)
+	sedHistory = append(sedHistory, m.Author.Username+": "+m.Message.Content)
 	if len(sedHistory) > 10 {
 		sedHistory = sedHistory[1:]
 	}
