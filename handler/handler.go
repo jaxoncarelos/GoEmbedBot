@@ -20,7 +20,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sedHistory = make([]string, 30)
 	}
 	content := m.Message.Content
-	if strings.HasPrefix(content, "s/") || strings.HasPrefix(content, "sed/") {
+	if strings.HasPrefix(content, "sed/") {
 		newContent, err := HandleMessage(sedHistory, content)
 		if err != nil {
 			log.Printf("Error handling message: %s\n", err)
