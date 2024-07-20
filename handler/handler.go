@@ -17,7 +17,7 @@ var sedHistory []string
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if sedHistory == nil {
-		sedHistory = make([]string, 10)
+		sedHistory = make([]string, 30)
 	}
 	content := m.Message.Content
 	if strings.HasPrefix(content, "s/") || strings.HasPrefix(content, "sed/") {
