@@ -19,17 +19,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if sedHistory == nil {
 		sedHistory = make([]string, 10)
 	}
-	sedHistory = append(sedHistory, m.Author.Username+": "+m.Message.Content)
-	if len(sedHistory) > 10 {
-		sedHistory = sedHistory[1:]
-	}
-
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
 	content := m.Message.Content
 	if strings.HasPrefix(content, "s/") || strings.HasPrefix(content, "sed/") {
-		// everything except last index in sedHistory
 		newContent, err := HandleMessage(sedHistory[:9], content)
 		if err != nil {
 			log.Printf("Error handling message: %s\n", err)
@@ -38,6 +29,15 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, newContent)
 		return
 	}
+	sedHistory = append(sedHistory, m.Author.Username+": "+m.Message.Content)
+	if len(sedHistory) > 10 {
+		sedHistory = sedHistory[1:]
+	}
+
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
+
 	if strings.HasPrefix(content, "!!") {
 		log.Printf("Did no embed on %s\n", content)
 		return
