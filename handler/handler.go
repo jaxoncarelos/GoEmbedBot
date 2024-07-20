@@ -12,11 +12,31 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// global var that will hold an array of 10 strings
+var sedHistory []string
+
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if sedHistory == nil {
+		sedHistory = make([]string, 10)
+	}
+	sedHistory = append(sedHistory, m.Message.Content)
+	if len(sedHistory) > 10 {
+		sedHistory = sedHistory[1:]
+	}
+
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 	content := m.Message.Content
+	if strings.HasPrefix(content, "s/") || strings.HasPrefix(content, "sed/") {
+		newContent, err := HandleMessage(sedHistory, content)
+		if err != nil {
+			log.Printf("Error handling message: %s\n", err)
+			return
+		}
+		s.ChannelMessageSend(m.ChannelID, newContent)
+		return
+	}
 	if strings.HasPrefix(content, "!!") {
 		log.Printf("Did no embed on %s\n", content)
 		return
