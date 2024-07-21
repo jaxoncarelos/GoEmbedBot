@@ -39,7 +39,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Content: content,
 	})
 	fmt.Printf("Sed history: %v\n", sedHistory)
-	if len(sedHistory) > 10 {
+	if len(sedHistory[m.ChannelID]) > 30 {
 		sedHistory[m.ChannelID] = sedHistory[m.ChannelID][1:]
 	}
 
