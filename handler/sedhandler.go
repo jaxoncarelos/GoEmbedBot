@@ -10,7 +10,7 @@ func HandleMessage(messages []MessageHandler, content string) (string, error) {
 	if len(split) < 3 {
 		return "", errors.New("Lack of arguments")
 	}
-	for i := len(sedHistory) - 1; i > 0; i-- {
+	for i := len(messages) - 1; i > 0; i-- {
 		if strings.Contains(messages[i].Content, split[1]) {
 			return messages[i].User + ": " + strings.Replace(messages[i].Content, split[1], split[2], 1), nil
 		}
