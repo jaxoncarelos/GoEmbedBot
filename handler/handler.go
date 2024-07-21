@@ -13,11 +13,16 @@ import (
 )
 
 // global var that will hold an array of 10 strings
-var sedHistory map[string][]string
+var sedHistory map[string][]MessageHandler
+
+type MessageHandler struct {
+	User    string
+	Content string
+}
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if sedHistory == nil {
-		sedHistory = map[string][]string{}
+		sedHistory = map[string][]MessageHandler{}
 	}
 	content := m.Message.Content
 	if strings.HasPrefix(content, "sed/") {
@@ -29,7 +34,10 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, newContent)
 		return
 	}
-	sedHistory[m.ChannelID] = append(sedHistory[m.ChannelID], content)
+	sedHistory[m.ChannelID] = append(sedHistory[m.ChannelID], MessageHandler{
+		User:    m.Author.Username,
+		Content: content,
+	})
 	if len(sedHistory) > 10 {
 		sedHistory[m.ChannelID] = sedHistory[m.ChannelID][1:]
 	}

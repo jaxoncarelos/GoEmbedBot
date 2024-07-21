@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-func HandleMessage(messages []string, content string) (string, error) {
+func HandleMessage(messages []MessageHandler, content string) (string, error) {
 	split := strings.Split(content, "/")
 	if len(split) < 3 {
 		return "", errors.New("Lack of arguments")
 	}
 	for i := len(sedHistory) - 1; i > 0; i-- {
-		if strings.Contains(messages[i], split[1]) {
-			return strings.Replace(messages[i], split[1], split[2], 1), nil
+		if strings.Contains(messages[i].Content, split[1]) {
+			return messages[i].User + ": " + strings.Replace(messages[i].Content, split[1], split[2], 1), nil
 		}
 	}
 	return "", errors.New("No match found")
