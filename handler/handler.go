@@ -21,6 +21,10 @@ type MessageHandler struct {
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
+
 	if sedHistory == nil {
 		sedHistory = map[string][]MessageHandler{}
 	}
@@ -40,10 +44,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	})
 	if len(sedHistory[m.ChannelID]) > 30 {
 		sedHistory[m.ChannelID] = sedHistory[m.ChannelID][1:]
-	}
-
-	if m.Author.ID == s.State.User.ID {
-		return
 	}
 
 	if strings.HasPrefix(content, "!!") {
