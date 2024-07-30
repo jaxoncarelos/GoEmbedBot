@@ -37,8 +37,12 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, newContent)
 		return
 	}
+	user := m.Member.Nick
+	if user == "" {
+		user = m.Author.Username
+	}
 	sedHistory[m.ChannelID] = append(sedHistory[m.ChannelID], MessageHandler{
-		User:    m.Member.Nick,
+		User:    user,
 		Content: content,
 	})
 	if len(sedHistory[m.ChannelID]) > 30 {
