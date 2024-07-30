@@ -12,7 +12,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// global var that will hold an array of 10 strings
 var sedHistory map[string][]MessageHandler
 
 type MessageHandler struct {
@@ -39,7 +38,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	sedHistory[m.ChannelID] = append(sedHistory[m.ChannelID], MessageHandler{
-		User:    m.Author.Username,
+		User:    m.Member.Nick,
 		Content: content,
 	})
 	if len(sedHistory[m.ChannelID]) > 30 {
