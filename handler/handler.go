@@ -64,7 +64,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkRegex := regexp.MustCompile(ContentUtils.GetRegex(isValid))
 	content = checkRegex.FindString(content)
 	switch isValid {
-	case ContentUtils.Twitter | ContentUtils.Facebook:
+	case ContentUtils.Twitter:
 		cmd := exec.Command(
 			"yt-dlp",
 			"-g",
