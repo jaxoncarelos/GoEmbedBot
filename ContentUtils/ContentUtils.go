@@ -14,6 +14,7 @@ const (
 	Tiktok
 	Reddit
 	Instagram
+	Facebook
 )
 
 var regex map[int]string = map[int]string{
@@ -21,6 +22,7 @@ var regex map[int]string = map[int]string{
 	Tiktok:    `https?://(?:www\.|vm\.|vt\.)?tiktok\.com/.+(?: )?`,
 	Reddit:    `https?://(?:(?:old\.|www\.)?reddit\.com|v\.redd\.it)/.+(?: )?`,
 	Instagram: `https?:\/\/(?:www\.)?instagram\.com\/[a-zA-Z0-9_]+\/?(?:\?igshid=[a-zA-Z0-9_]+)?`,
+	Facebook:  `https?:\/\/(?:www\.)?facebook\.com\/(reel)\/[a-zA-Z0-9_]+\/?`,
 }
 
 func GetRegex(index int) string {
