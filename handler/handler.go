@@ -64,7 +64,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkRegex := regexp.MustCompile(ContentUtils.GetRegex(isValid))
 	content = checkRegex.FindString(content)
 	switch isValid {
-	case ContentUtils.Twitter:
+	case ContentUtils.Twitter | ContentUtils.Facebook:
 		cmd := exec.Command(
 			"yt-dlp",
 			"-g",
@@ -74,10 +74,10 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		)
 		output, err := cmd.Output()
 		if err != nil {
-			log.Printf("Error getting twitter video: %s\n", err)
+			log.Printf("Error getting video: %s\n", err)
 			return
 		}
-		toSend := fmt.Sprintf("[Twitter Video](%s)", output)
+		toSend := fmt.Sprintf("[Video](%s)", output)
 		if should_be_spoiled {
 			toSend = fmt.Sprintf("||%s||", toSend)
 		}
