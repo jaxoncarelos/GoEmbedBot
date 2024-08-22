@@ -28,7 +28,13 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		sedHistory = map[string][]MessageHandler{}
 	}
 	content := m.Message.Content
+	var user string
 	if strings.HasPrefix(content, "sed/") {
+		if m.Member.Nick != "" {
+			user = m.Member.Nick
+		} else {
+			user = m.Author.Username
+		}
 		newContent, err := HandleMessage(sedHistory[m.ChannelID], content)
 		if err != nil {
 			log.Printf("Error handling message: %s\n", err)
@@ -37,7 +43,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, newContent)
 		return
 	}
-	user := m.Member.Nick
 	if user == "" {
 		user = m.Author.Username
 	}
