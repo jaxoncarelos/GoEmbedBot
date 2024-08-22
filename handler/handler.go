@@ -23,37 +23,35 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
-
-	if sedHistory == nil {
-		sedHistory = map[string][]MessageHandler{}
-	}
 	content := m.Message.Content
-	var user string
-	if strings.HasPrefix(content, "sed/") {
-		if m.Member.Nick != "" {
-			user = m.Member.Nick
-		} else {
-			user = m.Author.Username
+	{
+		if sedHistory == nil {
+			sedHistory = map[string][]MessageHandler{}
 		}
-		newContent, err := HandleMessage(sedHistory[m.ChannelID], content)
-		if err != nil {
-			log.Printf("Error handling message: %s\n", err)
+		var user string
+		if strings.HasPrefix(content, "sed/") {
+			if m.Member.Nick != "" {
+				user = m.Member.Nick
+			} else {
+				user = m.Author.Username
+			}
+			newContent, err := HandleMessage(sedHistory[m.ChannelID], content)
+			if err != nil {
+				log.Printf("Error handling message: %s\n", err)
+				return
+			}
+			s.ChannelMessageSend(m.ChannelID, newContent)
 			return
 		}
-		s.ChannelMessageSend(m.ChannelID, newContent)
-		return
-	}
-	if user == "" {
-		user = m.Author.Username
-	}
-	sedHistory[m.ChannelID] = append(sedHistory[m.ChannelID], MessageHandler{
-		User:    user,
-		Content: content,
-	})
-	if len(sedHistory[m.ChannelID]) > 30 {
-		sedHistory[m.ChannelID] = sedHistory[m.ChannelID][1:]
-	}
+		sedHistory[m.ChannelID] = append(sedHistory[m.ChannelID], MessageHandler{
+			User:    user,
+			Content: content,
+		})
+		if len(sedHistory[m.ChannelID]) > 30 {
+			sedHistory[m.ChannelID] = sedHistory[m.ChannelID][1:]
+		}
 
+	}
 	if strings.HasPrefix(content, "!!") {
 		log.Printf("Did no embed on %s\n", content)
 		return
