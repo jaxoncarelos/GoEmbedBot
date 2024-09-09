@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"os/exec"
 	"regexp"
@@ -61,7 +60,7 @@ func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, erro
 	fileName := uuid.New()
 	outPath := fmt.Sprintf("%s.mp4", fileName)
 	if should_be_spoiled {
-		outPath = fmt.Sprintf("output_%d_spoiler.mp4", fileName)
+		outPath = fmt.Sprintf("%d_spoiler.mp4", fileName)
 	}
 	{
 		err := FileExists(outPath)
