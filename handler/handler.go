@@ -103,6 +103,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 		bytes, err := os.ReadFile(outPath)
+		defer os.Remove(outPath)
 		if err != nil {
 			log.Printf("Error opening file: %s\n", err)
 			return
@@ -116,6 +117,5 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				ContentType: "video/mp4",
 			},
 		})
-		os.Remove(outPath)
 	}
 }
