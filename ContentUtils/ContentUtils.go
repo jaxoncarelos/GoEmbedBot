@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -56,10 +58,10 @@ func FileExists(filename string) error {
 
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
 	// generate random constant to put in filename
-	random := rand.Intn(100000)
-	outPath := fmt.Sprintf("output_%d.mp4", random)
+	fileName := uuid.New()
+	outPath := fmt.Sprintf("%s.mp4", fileName)
 	if should_be_spoiled {
-		outPath = fmt.Sprintf("output_%d_spoiler.mp4", random)
+		outPath = fmt.Sprintf("output_%d_spoiler.mp4", fileName)
 	}
 	{
 		err := FileExists(outPath)
