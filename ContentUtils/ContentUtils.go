@@ -3,7 +3,9 @@ package ContentUtils
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"regexp"
@@ -53,9 +55,11 @@ func FileExists(filename string) error {
 }
 
 func DownloadVideoFile(url string, should_be_spoiled bool) (string, string, error) {
-	outPath := "output.mp4"
+	// generate random constant to put in filename
+	random := rand.Intn(100000)
+	outPath := fmt.Sprintf("output_%d.mp4", random)
 	if should_be_spoiled {
-		outPath = "SPOILER_output.mp4"
+		outPath = fmt.Sprintf("output_%d_spoiler.mp4", random)
 	}
 	{
 		err := FileExists(outPath)

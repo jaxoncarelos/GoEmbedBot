@@ -116,5 +116,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				ContentType: "video/mp4",
 			},
 		})
+		os.Remove(outPath)
 	}
 }
