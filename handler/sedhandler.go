@@ -15,5 +15,6 @@ func HandleMessage(messages []MessageHandler, content string) (string, error) {
 			return messages[i].User + ": " + strings.Replace(messages[i].Content, split[1], split[2], 1), nil
 		}
 	}
+	// one in this file
 	return "", errors.New("No match found")
 }
