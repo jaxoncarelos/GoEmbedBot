@@ -2,10 +2,9 @@ package EmbedBot
 
 import (
 	"fmt"
+	"jaxon/embedbot/handler"
 	"os"
 	"os/signal"
-
-	"jaxon/embedbot/handler"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"

@@ -52,7 +52,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 	}
-	if strings.HasPrefix(content, "!!") {
+	if strings.HasPrefix(content, "!!") || strings.HasPrefix(content, ".dl") {
 		log.Printf("Did no embed on %s\n", content)
 		return
 	}
