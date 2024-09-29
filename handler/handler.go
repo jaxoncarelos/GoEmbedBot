@@ -20,7 +20,7 @@ type MessageHandler struct {
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
+	if m.Author.Bot {
 		return
 	}
 	content := m.Message.Content
