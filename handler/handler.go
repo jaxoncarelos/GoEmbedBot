@@ -90,7 +90,17 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			AllowedMentions: &discordgo.MessageAllowedMentions{},
 			Content:         toSend,
 		})
-		s.ChannelMessageEdit(m.ChannelID, m.ID, toSend)
+		// add suppress embeds flag to message
+		log.Printf("hello!")
+		_, weirdErr := ContentUtils.CustomChannelMessageEditComplex(s, &ContentUtils.MessageEdit{
+			Flags:   discordgo.MessageFlagsSuppressEmbeds,
+			ID:      m.Message.ID,
+			Channel: m.Message.ChannelID,
+		})
+		if weirdErr != nil {
+			log.Printf("Error editing message: %s\n", weirdErr)
+		}
+
 	default:
 		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {

@@ -21,6 +21,8 @@ func Run() {
 	}
 	dg.AddHandler(handler.MessageCreate)
 
+	dg.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuildMessageReactions
+
 	err = dg.Open()
 	if err != nil {
 		fmt.Println("error opening connection,", err)
