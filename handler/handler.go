@@ -90,7 +90,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			AllowedMentions: &discordgo.MessageAllowedMentions{},
 			Content:         toSend,
 		})
-
+		s.ChannelMessageEdit(m.ChannelID, m.ID, toSend)
 	default:
 		output, outPath, err := ContentUtils.DownloadVideoFile(content, should_be_spoiled)
 		if err != nil {
