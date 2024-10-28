@@ -128,5 +128,14 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				ContentType: "video/mp4",
 			},
 		})
+		_, weirdErr := ContentUtils.CustomChannelMessageEditComplex(s, &ContentUtils.MessageEdit{
+			Flags:   discordgo.MessageFlagsSuppressEmbeds,
+			ID:      m.Message.ID,
+			Channel: m.Message.ChannelID,
+		})
+		if weirdErr != nil {
+			log.Printf("Error editing message: %s\n", weirdErr)
+		}
+
 	}
 }
